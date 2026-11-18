@@ -3,9 +3,14 @@ import '../widgets/input_field.dart';
 import '../widgets/tombol_utama.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    super.key,
+    required this.title,
+    this.username = "Pengguna",
+  });
 
   final String title;
+  final String username;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -13,8 +18,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  String _name = "";
+  late String _name;
   final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _name = widget.username;
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -44,11 +55,69 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('You have pushed the button this many times:'),
+            Card(
+              elevation: 2,
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.waving_hand_rounded,
+                      size: 42,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Selamat datang, $_name!",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Anda berhasil masuk ke halaman Beranda.",
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Ganti Nama Tampilan",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            InputField(
+              controller: _nameController,
+              hint: "Masukkan Nama Baru",
+              icon: Icons.badge,
+            ),
+            const SizedBox(height: 12),
+            TombolUtama(
+              label: "Perbarui Nama",
+              onPressed: () {
+                if (_nameController.text.trim().isNotEmpty) {
+                  setState(() {
+                    _name = _nameController.text.trim();
+                  });
+                }
+              },
+            ),
+            const Divider(height: 36),
+            const Text(
+              "Counter Interaktif",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const SizedBox(height: 6),
             Text(
               '$_counter',
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 10),
@@ -59,47 +128,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: _incrementCounter,
                   child: const Text("Increment"),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: _decrementCounter,
                   child: const Text("Decrement"),
                 ),
               ],
             ),
-            const Divider(height: 32),
-            const Text(
-              "Ganti Nama",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            InputField(
-              controller: _nameController,
-              hint: "Input Nama",
-              icon: Icons.badge,
-            ),
-            const SizedBox(height: 12),
-            TombolUtama(
-              label: "Tampilkan Nama",
-              onPressed: () {
-                setState(() {
-                  _name = _nameController.text;
-                });
-              },
-            ),
-            const SizedBox(height: 12),
-            Text(
-              "Nama Saya $_name",
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            TombolUtama(
-              label: "Hapus Nama",
-              onPressed: () {
-                setState(() {
-                  _nameController.clear();
-                  _name = "";
-                });
-              },
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.logout),
+              label: const Text("Logout / Kembali ke Login"),
             ),
           ],
         ),

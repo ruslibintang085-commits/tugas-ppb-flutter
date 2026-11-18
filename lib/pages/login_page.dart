@@ -22,10 +22,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   void _handleLogin() {
+    final inputUser = _usernameController.text.trim();
+    final inputPass = _passwordController.text.trim();
+
+    if (inputUser.isEmpty || inputPass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Username dan Password wajib diisi!"),
+        ),
+      );
+      return;
+    }
+
     setState(() {
-      _username = _usernameController.text;
-      _password = _passwordController.text;
+      _username = inputUser;
+      _password = inputPass;
     });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyHomePage(
+          title: "Home / Beranda",
+          username: inputUser,
+        ),
+      ),
+    );
   }
 
   @override
@@ -42,50 +64,47 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const HeaderLogin(judul: "Silakan Login"),
-            const SizedBox(height: 24),
-            InputField(
-              controller: _usernameController,
-              hint: "Username",
-              icon: Icons.person,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const HeaderLogin(judul: "Welcome Back"),
+                const SizedBox(height: 6),
+                const Text(
+                  "Silakan masuk menggunakan akun Anda",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 24),
+                InputField(
+                  controller: _usernameController,
+                  hint: "Username atau NIM",
+                  icon: Icons.person_outline,
+                ),
+                const SizedBox(height: 16),
+                InputField(
+                  controller: _passwordController,
+                  hint: "Password",
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                ),
+                const SizedBox(height: 20),
+                TombolUtama(
+                  label: "Login",
+                  onPressed: _handleLogin,
+                ),
+                const SizedBox(height: 20),
+                KartuHasilLogin(
+                  username: _username,
+                  password: _password,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            InputField(
-              controller: _passwordController,
-              hint: "Password",
-              icon: Icons.lock,
-              isPassword: true,
-            ),
-            const SizedBox(height: 20),
-            TombolUtama(
-              label: "Login",
-              onPressed: _handleLogin,
-            ),
-            const SizedBox(height: 16),
-            KartuHasilLogin(
-              username: _username,
-              password: _password,
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const MyHomePage(title: "Halaman Utama"),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.arrow_forward),
-              label: const Text("Ke MyHomePage (Ganti Nama)"),
-            ),
-          ],
+          ),
         ),
       ),
     );

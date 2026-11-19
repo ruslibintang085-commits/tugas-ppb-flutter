@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/input_field.dart';
 import '../widgets/tombol_utama.dart';
 
@@ -18,13 +19,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  late String _name;
+  String _name = "";
+  bool _isInitialized = false;
   final TextEditingController _nameController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _name = widget.username;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String && args.isNotEmpty) {
+        _name = args;
+      } else {
+        _name = widget.username;
+      }
+      _isInitialized = true;
+    }
   }
 
   void _incrementCounter() {
@@ -37,6 +47,14 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter--;
     });
+  }
+
+  Future<void> _handleLogout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
+
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
@@ -79,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      "Anda berhasil masuk ke halaman Beranda.",
+                      "Sesi login Anda tersimpan di SharedPreferences.",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -137,9 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 24),
             OutlinedButton.icon(
-              onPressed: () => Navigator.pop(context),
+              onPressed: _handleLogout,
               icon: const Icon(Icons.logout),
-              label: const Text("Logout / Kembali ke Login"),
+              label: const Text("Logout / Hapus Sesi Login"),
             ),
           ],
         ),

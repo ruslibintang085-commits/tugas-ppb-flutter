@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'pages/splash_pages.dart';
 import 'pages/login_page.dart';
+import 'pages/my_home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,13 +13,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tugas 3 Flutter',
+      title: 'Tugas PPB Flutter',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginPage(title: 'Halaman Login'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashPages(),
+        '/login': (context) => const LoginPage(title: 'Halaman Login'),
+        '/home': (context) => const MyHomePage(title: 'Home / Beranda'),
+      },
     );
   }
 }

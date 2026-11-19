@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/header_login.dart';
 import '../widgets/input_field.dart';
 import '../widgets/tombol_utama.dart';
 import '../widgets/kartu_hasil_login.dart';
-import 'my_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title});
@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     final inputUser = _usernameController.text.trim();
     final inputPass = _passwordController.text.trim();
 
@@ -34,19 +34,21 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    // Simpan username ke SharedPreferences agar sesi login tersimpan
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', inputUser);
+
+    if (!mounted) return;
+
     setState(() {
       _username = inputUser;
       _password = inputPass;
     });
 
-    Navigator.push(
+    Navigator.pushReplacementNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => MyHomePage(
-          title: "Home / Beranda",
-          username: inputUser,
-        ),
-      ),
+      '/home',
+      arguments: inputUser,
     );
   }
 
